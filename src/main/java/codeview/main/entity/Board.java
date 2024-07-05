@@ -7,7 +7,10 @@ import lombok.Setter;
 @Entity
 @Getter @Setter
 public class Board {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
-    @Column
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String title;
 }
