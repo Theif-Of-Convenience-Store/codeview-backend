@@ -1,4 +1,4 @@
-package codeview.main.service;
+package codeview.main.security.service;
 
 import codeview.main.dto.BoardDTO;
 import codeview.main.entity.Board;

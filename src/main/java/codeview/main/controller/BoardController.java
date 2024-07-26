@@ -1,7 +1,7 @@
 package codeview.main.controller;
 
 import codeview.main.dto.BoardDTO;
-import codeview.main.service.BoardService;
+import codeview.main.security.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

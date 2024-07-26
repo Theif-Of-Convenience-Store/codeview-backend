@@ -3,6 +3,7 @@ package codeview.main.service;
 import codeview.main.dto.BoardDTO;
 import codeview.main.entity.Board;
 import codeview.main.repository.BoardRepository;
+import codeview.main.security.service.BoardService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
