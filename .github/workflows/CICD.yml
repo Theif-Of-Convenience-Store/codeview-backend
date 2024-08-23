@@ -116,7 +116,6 @@ jobs:
           username: ${{ secrets.SERVER_USER_NAME }}
           host: ${{ secrets.LIVE_SERVER_IP }}
           key: ${{ secrets.SSH_KEY }}
-          script_stop: true
           script: |
             if [ $(sudo docker ps -a -q -f name=${{env.CURRENT_UPSTREAM}}) ]; then
               sudo docker stop ${{env.CURRENT_UPSTREAM}}
