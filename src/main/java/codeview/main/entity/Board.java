@@ -1,11 +1,11 @@
 package codeview.main.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,4 +13,8 @@ public class Board {
 
     @Column(nullable = false)
     private String title;
+
+    public Board(String title) {
+        this.title = title;
+    }
 }
