@@ -22,8 +22,8 @@ jobs:
 
       - name: Create application-secret-deploy.yml
         run: |
-          echo "Decoding SECRET_FILE secret and create application-secret-deploy.yml"
-          echo "${{ secrets.SECRET_FILE }}" | base64 -d > ./src/main/resources/application-secret-deploy.yml
+          echo "Decoding SECRET and create application-secret-deploy.yml"
+          echo "${{ secrets.SECRET }}" | base64 -d > ./src/main/resources/application-secret-deploy.yml
 
 
       - name: Build with Gradle
