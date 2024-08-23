@@ -12,18 +12,18 @@ public class OAuth2Controller {
     @GetMapping("/oauth2/callback/google")
     public String googleCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
         model.addAttribute("name", principal.getAttribute("name"));
-        return "home"; // 로그인 성공 후 리다이렉트될 페이지
+        return "home";
     }
 
     @GetMapping("/oauth2/callback/github")
     public String githubCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
         model.addAttribute("name", principal.getAttribute("name"));
-        return "home"; // 로그인 성공 후 리다이렉트될 페이지
+        return "home";
     }
 
     @GetMapping("/oauth2/callback/kakao")
     public String kakaoCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
         model.addAttribute("name", principal.getAttribute("nickname"));
-        return "home"; // 로그인 성공 후 리다이렉트될 페이지
+        return "home";
     }
 }

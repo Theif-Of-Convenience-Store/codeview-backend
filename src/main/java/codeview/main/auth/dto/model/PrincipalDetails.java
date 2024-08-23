@@ -43,7 +43,7 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getEmail(); // 변경: memberKey 대신 email 사용
+        return member.getEmail();
     }
 
     @Override

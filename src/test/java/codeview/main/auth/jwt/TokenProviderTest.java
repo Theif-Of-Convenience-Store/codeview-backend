@@ -47,7 +47,6 @@ class TokenProviderTest {
 
     @Test
     void testValidateToken_ExpiredToken() {
-        // Expired token generation
         String expiredToken = Jwts.builder()
                 .setSubject("test@example.com")
                 .setIssuedAt(new Date(System.currentTimeMillis() - 10000))
