@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -36,7 +37,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // REST API
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -45,7 +45,6 @@ public class SecurityConfig {
                 .headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Request 인증, 인가 설정
                 .authorizeHttpRequests(request -> request.requestMatchers(
                                 new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/home"),
@@ -55,14 +54,14 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated())
 
-                // OAuth2 설정 (OAuth 인증 성공 후 사용자 정보 처리 설정 담당)
-                .oauth2Login(oauth -> oauth.userInfoEndpoint().userService(customOAuth2UserService)
-                        .and().successHandler(oAuth2SuccessHandler))
-                // JWT 설정
+                .oauth2Login(oauth -> oauth
+                        .loginPage("/login")
+                        .successHandler(oAuth2SuccessHandler)
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)))
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new TokenExceptionFilter(), TokenAuthenticationFilter.class)
 
-                // 예외 처리 설정
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                         .accessDeniedHandler(new CustomAccessDeniedHandler()));

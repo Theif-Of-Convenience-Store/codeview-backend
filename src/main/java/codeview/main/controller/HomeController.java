@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/home")
     public String home() {
-        return "home"; // home.html 템플릿을 반환
+        return "home";
     }
 }
