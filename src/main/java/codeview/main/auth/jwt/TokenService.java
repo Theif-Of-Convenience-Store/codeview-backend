@@ -1,32 +1,39 @@
 package codeview.main.auth.jwt;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TokenService {
 
-    private final Map<String, Token> tokenStore = new HashMap<>();
+    private final TokenRepository tokenRepository;
 
+    @Transactional
     public void saveOrUpdate(String username, String refreshToken, String accessToken) {
-        Token token = new Token(username, refreshToken, accessToken);
-        tokenStore.put(username, token);
+        Optional<Token> existingToken = tokenRepository.findByUsername(username);
+        if (existingToken.isPresent()) {
+            Token token = existingToken.get();
+            token.setRefreshToken(refreshToken);
+            token.setAccessToken(accessToken);
+            tokenRepository.save(token);
+        } else {
+            Token newToken = new Token(null, username, refreshToken, accessToken);
+            tokenRepository.save(newToken);
+        }
     }
 
     public Token findByAccessTokenOrThrow(String accessToken) {
-        return tokenStore.values().stream()
-                .filter(token -> token.getAccessToken().equals(accessToken))
-                .findFirst()
+        return tokenRepository.findByAccessToken(accessToken)
                 .orElseThrow(() -> new RuntimeException("Token not found"));
     }
 
+    @Transactional
     public void updateToken(String reissueAccessToken, Token token) {
         token.setAccessToken(reissueAccessToken);
+        tokenRepository.save(token);
     }
 }

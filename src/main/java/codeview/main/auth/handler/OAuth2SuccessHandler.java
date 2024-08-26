@@ -36,7 +36,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         result.put("refreshToken", refreshToken);
         responseBody.put("result", result);
 
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
