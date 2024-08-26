@@ -1,22 +1,33 @@
 package codeview.main.service;
 
+import codeview.main.dto.BoardResponse;
 import codeview.main.entity.Board;
 import codeview.main.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+
     public Board save(Board board) {
         return boardRepository.save(board);
     }
+
     public Optional<Board> findBoardById(Long id) {
         return boardRepository.findById(id);
     }
+
+    public List<BoardResponse> findAll() {
+        return boardRepository.findAll().stream()
+                .map(BoardResponse::new)
+                .toList();
+    }
+
     public Board updateBoard(Long id, Board updateBoard) {
         return boardRepository.findById(id)
                 .map(board -> {
@@ -25,6 +36,7 @@ public class BoardService {
                 })
                 .orElseThrow(() -> new RuntimeException("Board not found"));
     }
+
     public void deleteBoard(Long id) {
         if (boardRepository.existsById(id)) {
             boardRepository.deleteById(id);

@@ -10,14 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
-
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
+
     @GetMapping("/{id}")
     public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long id) {
         Optional<Board> findBoardObj = boardService.findBoardById(id);
@@ -29,18 +30,23 @@ public class BoardController {
         }
     }
 
-    @PostMapping("/write")
-    public ResponseEntity<ApiResponse<BoardResponse>> boardSave(@RequestBody Board board) {
-        Board saveBoard = boardService.save(board);
-        BoardResponse boardResponse = new BoardResponse(saveBoard);
-        ApiResponse<BoardResponse> response = new ApiResponse<>(HttpStatus.CREATED, "Board Write Success", boardResponse);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(response);
+    @GetMapping
+    public ResponseEntity<List<BoardResponse>> getAllBoards() {
+        List<BoardResponse> boardResponses = boardService.findAll();
+        return ResponseEntity.ok(boardResponses);
     }
+
+    @PostMapping("/write")
+    public ResponseEntity<ApiResponse<BoardResponse>> boardSave(@RequestBody BoardRequest boardRequest) {
+        Board saveBoard = new Board(boardRequest.getTitle());
+        Board savedBoard = boardService.save(saveBoard);
+        BoardResponse boardResponse = new BoardResponse(savedBoard);
+        ApiResponse<BoardResponse> response = new ApiResponse<>(HttpStatus.CREATED, "Board Write Success", boardResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<BoardResponse> updateBoard(
-            @PathVariable Long id,
-            @RequestBody BoardRequest boardRequest) {
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long id, @RequestBody BoardRequest boardRequest) {
         Board updatedBoard = new Board();
         updatedBoard.setTitle(boardRequest.getTitle());
 
@@ -54,11 +60,11 @@ public class BoardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BoardResponse> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
         try {
             boardService.deleteBoard(id);
             return ResponseEntity.noContent().build();
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
