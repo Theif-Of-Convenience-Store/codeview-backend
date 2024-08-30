@@ -9,21 +9,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class OAuth2Controller {
 
-    @GetMapping("/oauth2/callback/google")
+    @GetMapping("/login/oauth2/code/google")
     public String googleCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
         model.addAttribute("name", principal.getAttribute("name"));
         return "home";
     }
 
-    @GetMapping("/oauth2/callback/github")
+    @GetMapping("/login/oauth2/code/github")
     public String githubCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
         model.addAttribute("name", principal.getAttribute("name"));
         return "home";
     }
 
-    @GetMapping("/oauth2/callback/kakao")
-    public String kakaoCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
-        model.addAttribute("name", principal.getAttribute("nickname"));
-        return "home";
-    }
+//    @GetMapping("/login/oauth2/code/kakao")
+//    public String kakaoCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
+//        model.addAttribute("name", principal.getAttribute("nickname"));
+//        return "home";
+//    }
 }
+

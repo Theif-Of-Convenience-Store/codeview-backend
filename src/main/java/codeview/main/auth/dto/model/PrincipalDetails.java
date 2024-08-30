@@ -23,7 +23,8 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
 
     @Override
     public String getName() {
-        return attributes.get(attributeKey).toString();
+        // If attributeKey is null or not present, fallback to member's email or name
+        return attributes.getOrDefault(attributeKey, member.getName() != null ? member.getName() : member.getEmail()).toString();
     }
 
     @Override
