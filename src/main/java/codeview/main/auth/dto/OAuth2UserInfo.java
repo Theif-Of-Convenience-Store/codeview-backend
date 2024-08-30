@@ -20,8 +20,10 @@ public class OAuth2UserInfo {
                 return ofGoogle(attributes);
             case "kakao":
                 return ofKakao(attributes);
+            case "github":
+                return ofGithub(attributes);
             default:
-                throw new IllegalArgumentException("Illegal registration ID: " + registrationId);
+                throw new IllegalArgumentException("Unsupported registration ID: " + registrationId);
         }
     }
 
@@ -41,6 +43,14 @@ public class OAuth2UserInfo {
                 .name((String) profile.get("nickname"))
                 .email((String) account.get("email"))
                 .profile((String) profile.get("profile_image_url"))
+                .build();
+    }
+
+    private static OAuth2UserInfo ofGithub(Map<String, Object> attributes) {
+        return OAuth2UserInfo.builder()
+                .name((String) attributes.get("login"))
+                .email((String) attributes.get("email"))
+                .profile((String) attributes.get("avatar_url"))
                 .build();
     }
 
