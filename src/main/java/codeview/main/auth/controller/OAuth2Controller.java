@@ -17,14 +17,13 @@ public class OAuth2Controller {
 
     @GetMapping("/login/oauth2/code/github")
     public String githubCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
-        model.addAttribute("name", principal.getAttribute("name"));
+        model.addAttribute("name", principal.getAttribute("login"));
         return "home";
     }
 
-//    @GetMapping("/login/oauth2/code/kakao")
-//    public String kakaoCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
-//        model.addAttribute("name", principal.getAttribute("nickname"));
-//        return "home";
-//    }
+    @GetMapping("/login/oauth2/code/kakao")
+    public String kakaoCallback(@AuthenticationPrincipal OAuth2User principal, Model model) {
+        model.addAttribute("name", principal.getAttribute("nickname"));
+        return "home";
+    }
 }
-

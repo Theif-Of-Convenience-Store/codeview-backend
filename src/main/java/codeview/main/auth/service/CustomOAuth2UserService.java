@@ -33,17 +33,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(registrationId, oAuth2UserAttributes);
 
-        // 이메일이 없는 경우 처리
-        Optional<Member> memberOptional = Optional.empty();
-        if (oAuth2UserInfo.getEmail() != null) {
-            memberOptional = memberRepository.findByEmail(oAuth2UserInfo.getEmail());
-        }
-
+        Optional<Member> memberOptional = memberRepository.findByEmail(oAuth2UserInfo.getEmail());
         Member member;
         if (memberOptional.isPresent()) {
             member = memberOptional.get();
         } else {
-            // 이메일이 없거나 기존 회원이 아닌 경우 새로 저장
             member = getOrSave(oAuth2UserInfo);
         }
 
@@ -55,15 +49,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         member.setName(oAuth2UserInfo.getName());
         member.setProfile(oAuth2UserInfo.getProfile());
 
-        if (oAuth2UserInfo.getEmail() != null) {
-            member.setEmail(oAuth2UserInfo.getEmail());
-        } else {
-            // 이메일이 없는 경우 다른 방법으로 식별자를 생성 (예: OAuth 제공자의 고유 ID 사용)
-            member.setEmail(oAuth2UserInfo.getName() + "@example.com");
-        }
+        member.setEmail(oAuth2UserInfo.getName() + "@kakao.com");
 
         member.setRole(Member.Role.ROLE_USER);
-
         return memberRepository.save(member);
     }
 }

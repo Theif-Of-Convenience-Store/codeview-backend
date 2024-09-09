@@ -36,12 +36,11 @@ public class OAuth2UserInfo {
     }
 
     private static OAuth2UserInfo ofKakao(Map<String, Object> attributes) {
-        Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
-        Map<String, Object> profile = (Map<String, Object>) account.get("profile");
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
         return OAuth2UserInfo.builder()
                 .name((String) profile.get("nickname"))
-                .email((String) account.get("email"))
                 .profile((String) profile.get("profile_image_url"))
                 .build();
     }
@@ -57,7 +56,7 @@ public class OAuth2UserInfo {
     public Member toEntity() {
         return Member.builder()
                 .name(name)
-                .email(email)
+                .email(email != null ? email : name + "@kakao.com")
                 .profile(profile)
                 .memberKey(KeyGenerator.generateKey())
                 .role(Member.Role.ROLE_USER)
