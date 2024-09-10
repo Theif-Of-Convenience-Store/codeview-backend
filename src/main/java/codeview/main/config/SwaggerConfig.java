@@ -18,13 +18,13 @@ public class SwaggerConfig {
         String securityJwtName = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(securityJwtName);
 
-
         Components components = new Components()
                 .addSecuritySchemes(securityJwtName, new SecurityScheme()
                         .name(securityJwtName)
                         .type(SecurityScheme.Type.HTTP)
                         .scheme(BEARER_TOKEN_PREFIX)
                         .bearerFormat(securityJwtName));
+
 
         Info info = new Info()
                 .version("v1.0.0")
