@@ -15,15 +15,12 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI(){
-        String securityJwtName = "JWT";
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(securityJwtName);
 
         Components components = new Components()
-                .addSecuritySchemes(securityJwtName, new SecurityScheme()
-                        .name(securityJwtName)
+                .addSecuritySchemes("Authorization", new SecurityScheme()
                         .type(SecurityScheme.Type.HTTP)
-                        .scheme(BEARER_TOKEN_PREFIX)
-                        .bearerFormat(securityJwtName));
+                        .scheme("bearer")
+                        .bearerFormat("JWT"));
 
 
         Info info = new Info()
@@ -31,9 +28,12 @@ public class SwaggerConfig {
                 .title("codeView API");
 
 
+
         return new OpenAPI()
+                .addSecurityItem(new SecurityRequirement().addList("Authorization"))
                 .components(components)
                 .info(info);
+
     }
 
 }
