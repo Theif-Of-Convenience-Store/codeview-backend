@@ -1,10 +1,13 @@
 package codeview.main.entity;
 
+import codeview.main.dto.board.BoardReqDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 public class Board {
     @Id
@@ -13,8 +16,22 @@ public class Board {
 
     @Column(nullable = false)
     private String title;
+    private String content;
 
-    public Board(String title) {
-        this.title = title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="blog_id")
+    private Blog blog;
+
+
+    public Board(BoardReqDto boardReqDto) {
+        this.title = boardReqDto.getTitle();
+        this.content = boardReqDto.getContent();
+    }
+    public void addBlog(Blog blog) {
+        this.blog = blog;
+    }
+    public void update(BoardReqDto boardReqDto) {
+        this.title = boardReqDto.getTitle();
+        this.content = boardReqDto.getContent();
     }
 }

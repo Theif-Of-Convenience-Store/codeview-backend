@@ -1,35 +1,27 @@
 package codeview.main.auth.handler;
 
 import codeview.main.auth.jwt.TokenProvider;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.mockito.Mockito.*;
-
-class OAuth2SuccessHandlerTest {
+@AutoConfigureMockMvc
+@SpringBootTest
+public class OAuth2SuccessHandlerTest {
 
     @Mock
     private TokenProvider tokenProvider;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private HttpServletResponse response;
 
     @Mock
     private Authentication authentication;
@@ -37,33 +29,46 @@ class OAuth2SuccessHandlerTest {
     @InjectMocks
     private OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+    private MockMvc mockMvc;
 
+    @BeforeEach
+    public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(oAuth2SuccessHandler).build();
+    }
 
     @Test
-    void testOnAuthenticationSuccess() throws IOException, ServletException {
-        when(tokenProvider.generateAccessToken(authentication)).thenReturn("mockAccessToken");
-        when(tokenProvider.generateRefreshToken(authentication, "mockAccessToken")).thenReturn("mockRefreshToken");
+    public void testOnAuthenticationSuccess_withRedirect() throws Exception {
+        // 가짜 토큰 생성
+        String accessToken = "testAccessToken";
+        String refreshToken = "testRefreshToken";
+        String redirectUrl = "http://localhost:3000";
 
-        PrintWriter writer = mock(PrintWriter.class);
-        when(response.getWriter()).thenReturn(writer);
+        // TokenProvider 모의 설정
+        when(tokenProvider.generateAccessToken(authentication)).thenReturn(accessToken);
+        when(tokenProvider.generateRefreshToken(authentication, accessToken)).thenReturn(refreshToken);
 
-        oAuth2SuccessHandler.onAuthenticationSuccess(request, response, authentication);
-
-        verify(response).setContentType("application/json");
-        verify(response).setCharacterEncoding("UTF-8");
-        verify(response).setStatus(HttpServletResponse.SC_OK);
-
-        // JSON 문자열을 파싱하여 비교
-        ObjectMapper objectMapper = new ObjectMapper();
-        String expectedJson = "{\"code\":200,\"result\":{\"accessToken\":\"mockAccessToken\",\"refreshToken\":\"mockRefreshToken\"}}";
-        String actualJson = "{\"result\":{\"accessToken\":\"mockAccessToken\",\"refreshToken\":\"mockRefreshToken\"},\"code\":200}";
-
-        assertEquals(objectMapper.readTree(expectedJson), objectMapper.readTree(actualJson));
+        // OAuth2SuccessHandler가 요청을 처리하는지 테스트
+        mockMvc.perform(get("/oauth2/authorization/kakao")
+                        .param("redirect", redirectUrl))
+                .andExpect(redirectedUrl(String.format("%s/auth/token?accessToken=%s&refreshToken=%s",
+                        redirectUrl, accessToken, refreshToken)));
     }
 
+    @Test
 
+    public void testOnAuthenticationSuccess_withoutRedirect() throws Exception {
+        // 가짜 토큰 생성
+        String accessToken = "testAccessToken";
+        String refreshToken = "testRefreshToken";
+        String defaultRedirectUrl = "http://localhost:3000";
+
+        // TokenProvider 모의 설정
+        when(tokenProvider.generateAccessToken(authentication)).thenReturn(accessToken);
+        when(tokenProvider.generateRefreshToken(authentication, accessToken)).thenReturn(refreshToken);
+
+        // 리다이렉트 파라미터가 없을 때 기본 URL로 리디렉트 되는지 확인
+        mockMvc.perform(get("/oauth2/authorization/kakao"))
+                .andExpect(redirectedUrl(String.format("%s/auth/token?accessToken=%s&refreshToken=%s",
+                        defaultRedirectUrl, accessToken, refreshToken)));
+    }
 }
