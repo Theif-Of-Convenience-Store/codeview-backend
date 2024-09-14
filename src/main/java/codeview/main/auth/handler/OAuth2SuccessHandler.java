@@ -28,13 +28,20 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(authentication, accessToken);
 
-        // JSON 형태로 응답
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(tokens));
+        String redirectUrl = request.getParameter("redirect");
+
+
+        if (redirectUrl == null || redirectUrl.isEmpty()) {
+            redirectUrl = "http://localhost:3000";
+        }
+
+
+        String redirectWithTokens = String.format("%s/auth/token?accessToken=%s&refreshToken=%s",
+                redirectUrl, accessToken, refreshToken);
+
+
+        response.sendRedirect(redirectWithTokens);
     }
 }
+

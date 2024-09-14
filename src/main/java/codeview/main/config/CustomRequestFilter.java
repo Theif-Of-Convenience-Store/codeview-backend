@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class CustomRequestFilter extends OncePerRequestFilter {
+public class  CustomRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
