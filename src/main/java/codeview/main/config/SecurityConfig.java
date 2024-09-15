@@ -59,7 +59,9 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/home"),
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/oauth2/**"),
+                                new AntPathRequestMatcher("/env"),
                                 new AntPathRequestMatcher("/api/oauth2/**")
+
                         ).permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
