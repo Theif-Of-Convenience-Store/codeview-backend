@@ -1,6 +1,6 @@
 package codeview.main.auth.jwt;
 
-import codeview.main.entity.Member;
+import codeview.main.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
@@ -26,18 +26,21 @@ import static org.springframework.security.oauth2.core.OAuth2ErrorCodes.INVALID_
 @Component
 public class TokenProvider {
 
-    @Value("blueisme256bitsecretkey123456789012")
+    @Value("${jwt.secret}")
     private String key;
+
     @Getter
     private SecretKey secretKey;
+
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
     private static final String KEY_ROLE = "role";
+
     private final TokenService tokenService;
 
     @PostConstruct
     protected void setSecretKey() {
-        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        this.secretKey = Keys.hmacShaKeyFor(key.getBytes());
     }
 
     public String generateAccessToken(Authentication authentication) {
@@ -71,10 +74,11 @@ public class TokenProvider {
         Claims claims = parseClaims(token);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-        Member principal = Member.builder()
+        User principal = User.builder()
                 .email(claims.getSubject())
-                .role(Member.Role.valueOf(claims.get(KEY_ROLE).toString()))
+                .role(User.Role.valueOf(claims.get(KEY_ROLE).toString()))  // Role 처리
                 .build();
+
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 

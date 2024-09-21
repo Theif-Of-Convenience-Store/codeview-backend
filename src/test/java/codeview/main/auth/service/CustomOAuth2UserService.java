@@ -2,8 +2,8 @@ package codeview.main.auth.service;
 
 import codeview.main.auth.dto.model.PrincipalDetails;
 import codeview.main.auth.dto.OAuth2UserInfo;
-import codeview.main.entity.Member;
-import codeview.main.repository.MemberRepository;
+import codeview.main.entity.User;
+import codeview.main.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -17,10 +17,10 @@ import java.util.Map;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
-    public CustomOAuth2UserService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
+    public CustomOAuth2UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -32,13 +32,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(registrationId, oAuth2UserAttributes);
-        Member member = getOrSave(oAuth2UserInfo);
+        User user = getOrSave(oAuth2UserInfo);
 
-        return new PrincipalDetails(member, oAuth2UserAttributes, userNameAttributeName);
+        return new PrincipalDetails(user, oAuth2UserAttributes, userNameAttributeName);
     }
 
-    private Member getOrSave(OAuth2UserInfo oAuth2UserInfo) {
-        return memberRepository.findByEmail(oAuth2UserInfo.getEmail())
-                .orElseGet(() -> memberRepository.save(oAuth2UserInfo.toEntity()));
+    private User getOrSave(OAuth2UserInfo oAuth2UserInfo) {
+        return userRepository.findByEmail(oAuth2UserInfo.getEmail())
+                .orElseGet(() -> userRepository.save(oAuth2UserInfo.toEntity()));
     }
 }

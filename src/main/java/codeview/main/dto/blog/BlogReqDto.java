@@ -4,5 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class BlogReqDto {
-    private String name;
+    private String title;
+    private String contentPreview;
 }

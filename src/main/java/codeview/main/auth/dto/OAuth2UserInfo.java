@@ -1,7 +1,6 @@
 package codeview.main.auth.dto;
 
-import codeview.main.entity.Member;
-import codeview.main.util.KeyGenerator;
+import codeview.main.entity.User;
 import lombok.Builder;
 import lombok.Data;
 
@@ -53,13 +52,11 @@ public class OAuth2UserInfo {
                 .build();
     }
 
-    public Member toEntity() {
-        return Member.builder()
+    public User toEntity() {
+        return User.builder()
                 .name(name)
                 .email(email != null ? email : name + "@kakao.com")
-                .profile(profile)
-                .memberKey(KeyGenerator.generateKey())
-                .role(Member.Role.ROLE_USER)
+                .logo(profile)
                 .build();
     }
 }
