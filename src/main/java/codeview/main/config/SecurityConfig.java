@@ -48,7 +48,8 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(request -> request.requestMatchers(
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(
                                 new AntPathRequestMatcher("/swagger"),
                                 new AntPathRequestMatcher("/swagger-ui.html"),
                                 new AntPathRequestMatcher("/swagger-ui/**"),
@@ -61,7 +62,6 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/oauth2/**"),
                                 new AntPathRequestMatcher("/env"),
                                 new AntPathRequestMatcher("/api/oauth2/**")
-
                         ).permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth

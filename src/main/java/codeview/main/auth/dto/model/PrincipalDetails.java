@@ -1,6 +1,6 @@
 package codeview.main.auth.dto.model;
 
-import codeview.main.entity.Member;
+import codeview.main.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,20 +11,20 @@ import java.util.Collections;
 import java.util.Map;
 
 public class PrincipalDetails implements OAuth2User, UserDetails {
-    private final Member member;
+
+    private final User user;
     private final Map<String, Object> attributes;
     private final String attributeKey;
 
-    public PrincipalDetails(Member member, Map<String, Object> attributes, String attributeKey) {
-        this.member = member;
+    public PrincipalDetails(User user, Map<String, Object> attributes, String attributeKey) {
+        this.user = user;
         this.attributes = attributes;
         this.attributeKey = attributeKey;
     }
 
     @Override
     public String getName() {
-        // If attributeKey is null or not present, fallback to member's email or name
-        return attributes.getOrDefault(attributeKey, member.getName() != null ? member.getName() : member.getEmail()).toString();
+        return attributes.getOrDefault(attributeKey, user.getName() != null ? user.getName() : user.getEmail()).toString();
     }
 
     @Override
@@ -34,17 +34,17 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getKey()));
+        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return user.getEmail();
     }
 
     @Override
