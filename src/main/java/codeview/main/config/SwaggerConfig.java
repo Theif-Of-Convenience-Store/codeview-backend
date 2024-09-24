@@ -1,6 +1,4 @@
 package codeview.main.config;
-
-
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -19,7 +17,7 @@ public class SwaggerConfig {
         Components components = new Components()
                 .addSecuritySchemes("Authorization", new SecurityScheme()
                         .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
+                        .scheme("Bearer")
                         .bearerFormat("JWT"));
 
 
