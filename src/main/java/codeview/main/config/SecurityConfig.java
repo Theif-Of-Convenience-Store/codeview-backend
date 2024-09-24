@@ -62,7 +62,8 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/env"),
                                 new AntPathRequestMatcher("/api/oauth2/**"),
                                 new AntPathRequestMatcher("/{boardId}/comment/**"),
-                                new AntPathRequestMatcher("/connect")
+                                new AntPathRequestMatcher("/connect"),
+                                new AntPathRequestMatcher("/notification/**")
 
                         ).permitAll()
                         .anyRequest().authenticated())

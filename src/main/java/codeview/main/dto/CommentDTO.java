@@ -2,7 +2,6 @@ package codeview.main.dto;
 
 import codeview.main.entity.Board;
 import codeview.main.entity.Comment;
-import codeview.main.entity.Member;
 import lombok.*;
 
 import java.util.List;

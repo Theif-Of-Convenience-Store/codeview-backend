@@ -10,12 +10,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @Transactional
@@ -51,15 +56,7 @@ public class NotificationService {
             });
 
             events.entrySet().stream()
-                    .filter(entry -> {
-                        boolean shouldSend = lastEventId.compareTo(entry.getKey()) < 0;
-                        if (shouldSend) {
-                            log.info("Sending cached event: ID = " + entry.getKey() + ", Data = " + entry.getValue());
-                        } else {
-                            log.info("Skipping cached event: ID = " + entry.getKey() + " (lastEventId = " + lastEventId + ")");
-                        }
-                        return shouldSend;
-                    })
+                    .filter(entry -> lastEventId.compareTo(entry.getKey())<0)
                     .forEach(entry -> sendToClient(emitter,entry.getKey(),entry.getValue()));
         }
 
@@ -72,13 +69,15 @@ public class NotificationService {
         log.info("Sending notification to user: " + user.getId());
         Notification notification = notificationRepository.save(createNotification(user, noticeType, message, data));
 
+        NotificationResponse notificationResponse = NotificationResponse.creat(notification);
+
         String userId = String.valueOf(user.getId());
         String eventId = userId + "_" + System.currentTimeMillis();
 
         Map<String, SseEmitter> emitters = emitterRepository.findAllEmittersByUserId(Long.valueOf(userId));
 
         emitters.forEach((key, emitter) -> {
-            emitterRepository.saveEventCache(key, notification);
+            emitterRepository.saveEventCache(key, notificationResponse);
             log.info("id는: "+ notification.getId().toString());
             log.info(emitterRepository.findAllEmittersByUserId(1L).toString());
             sendToClient(emitter, key, NotificationResponse.creat(notification));
@@ -111,6 +110,12 @@ public class NotificationService {
     private void delete(Long userId, Long notificationId){
 
 
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NotificationResponse> getNotifications(Long userId, Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findAllByUserId(userId, pageable);
+        return notifications.map(NotificationResponse::creat);
     }
 
 }

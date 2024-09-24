@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -21,10 +22,11 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
     @PostMapping
-    public ResponseEntity<String> saveComment(@PathVariable Long boardId, @RequestParam Long userId, @RequestBody CommentRequest commentRequest) {
+    public ResponseEntity<String> saveComment(@PathVariable Long boardId, Authentication authentication, @RequestBody CommentRequest commentRequest) {
 
         try {
-            Comment comment = commentService.createComment(boardId, userId, commentRequest);
+            String userEmail = authentication.getName();
+            Comment comment = commentService.createComment(boardId, userEmail, commentRequest);
             log.info(comment.toString());
             return ResponseEntity.ok("성공");
         } catch (Exception e) {
@@ -45,12 +47,13 @@ public class CommentController {
 
     @PutMapping
     public ResponseEntity<Void> updateComment(@PathVariable Long boardId,
-                                              @RequestParam Long userId,
+                                              Authentication authentication,
                                               @RequestParam Long commentId ,
                                               @RequestBody CommentRequest commentRequest){
 
         try{
-            commentService.updateComment(boardId,userId,commentId,commentRequest);
+            String userEmail = authentication.getName();
+            commentService.updateComment(boardId,userEmail,commentId,commentRequest);
             return ResponseEntity.ok().build();
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -60,11 +63,12 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long boardId,
-            @RequestParam Long userId,
+            Authentication authentication,
             Long id
     ){
         try {
-            commentService.deleteComment(boardId,userId,id);
+            String userEmail = authentication.getName();
+            commentService.deleteComment(boardId,userEmail,id);
             log.info(String.valueOf(id));
             return ResponseEntity.ok().build();
         } catch (Exception e){

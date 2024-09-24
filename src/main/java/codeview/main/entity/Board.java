@@ -1,37 +1,34 @@
 package codeview.main.entity;
 
-import codeview.main.dto.board.BoardReqDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.Date;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Board {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
-    private String content;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="blog_id")
+    @JoinColumn(name = "blog_id", nullable = false)
     private Blog blog;
 
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String content;
 
-    public Board(BoardReqDto boardReqDto) {
-        this.title = boardReqDto.getTitle();
-        this.content = boardReqDto.getContent();
-    }
-    public void addBlog(Blog blog) {
-        this.blog = blog;
-    }
-    public void update(BoardReqDto boardReqDto) {
-        this.title = boardReqDto.getTitle();
-        this.content = boardReqDto.getContent();
-    }
+    private String category;
+
+    private int hits;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Date createdAt = new Date();
 }

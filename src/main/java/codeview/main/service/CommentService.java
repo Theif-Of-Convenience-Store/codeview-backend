@@ -37,8 +37,8 @@ public class CommentService {
     @Autowired
     private NotificationService notificationService;
     @Transactional
-    public Comment createComment(Long BoardId, Long userId, CommentRequest commentRequest){
-        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(UserErrorCode.UNAUTHORIZED_USER));
+    public Comment createComment(Long BoardId, String userEmail, CommentRequest commentRequest){
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BusinessException(UserErrorCode.UNAUTHORIZED_USER));
         Board board = boardRepository.findById(BoardId).orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND_RESOURCE));
         Comment comment = new Comment(commentRequest);
         comment.addUser(user);
@@ -72,17 +72,17 @@ public class CommentService {
 
 
     @Transactional
-    public void updateComment(Long BoardId, Long userId, Long commentId, CommentRequest commentRequest){
+    public void updateComment(Long BoardId, String userEmail, Long commentId, CommentRequest commentRequest){
         Comment comment = commentRepository.findByIdAndBoardId_Id(commentId, BoardId);
-        if(comment.getUserId().getId().equals(userId)){
+        if(comment.getUserId().getEmail().equals(userEmail)){
             comment.update(commentRequest);
         }
     }
 
     @Transactional
-    public void deleteComment(Long BoardId, Long userId, Long commentId){
+    public void deleteComment(Long BoardId,  String userEmail, Long commentId){
         Comment comment = commentRepository.findByIdAndBoardId_Id(commentId, BoardId);
-        if(comment.getUserId().getId().equals(userId)){
+        if(comment.getUserId().getEmail().equals(userEmail)){
             commentRepository.delete(comment);
         }
     }
