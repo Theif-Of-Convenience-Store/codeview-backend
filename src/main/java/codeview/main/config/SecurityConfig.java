@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -61,7 +62,6 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/oauth2/**"),
                                 new AntPathRequestMatcher("/env"),
                                 new AntPathRequestMatcher("/api/oauth2/**"),
-                                new AntPathRequestMatcher("/{boardId}/comment/**"),
                                 new AntPathRequestMatcher("/connect"),
                                 new AntPathRequestMatcher("/notification/**")
 

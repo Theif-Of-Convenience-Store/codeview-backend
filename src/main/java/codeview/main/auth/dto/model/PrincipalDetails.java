@@ -1,6 +1,7 @@
 package codeview.main.auth.dto.model;
 
 import codeview.main.entity.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,10 +38,14 @@ public class PrincipalDetails implements OAuth2User, UserDetails {
         return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
+    public Long getId(){
+        return user.getId();
+    }
     @Override
     public String getPassword() {
         return user.getPassword();
     }
+
 
     @Override
     public String getUsername() {

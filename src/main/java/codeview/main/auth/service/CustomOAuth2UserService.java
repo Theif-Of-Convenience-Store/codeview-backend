@@ -3,11 +3,17 @@ package codeview.main.auth.service;
 import codeview.main.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -43,8 +49,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             logger.warn("중복된 이메일: {}", email);
             throw new IllegalArgumentException("해당 이메일로 이미 가입된 사용자가 있습니다.");
         }
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-        return oAuth2User;
+        return new DefaultOAuth2User(authorities, attributes, "name");
     }
 
     private String extractEmail(String registrationId, Map<String, Object> attributes, String userId) {

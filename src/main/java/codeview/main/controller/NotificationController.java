@@ -1,5 +1,6 @@
 package codeview.main.controller;
 
+import codeview.main.auth.dto.model.PrincipalDetails;
 import codeview.main.dto.Notification.NotificationResponse;
 import codeview.main.entity.Notification;
 import codeview.main.service.NotificationService;
@@ -24,18 +25,18 @@ public class NotificationController {
     private final NotificationService service;
 
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamNotifications(Authentication authentication,
+    public SseEmitter streamNotifications(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                           @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId){
-        Long userId = Long.parseLong(authentication.getName());
-        return service.createEmitter(userId,lastEventId);
+
+        return service.createEmitter(principalDetails.getId(), lastEventId);
     }
 
-    @GetMapping("/notification/{id}")
-    public ResponseEntity<Page<NotificationResponse>> getNotifications(@PathVariable Long id,
+    @GetMapping("/notification")
+    public ResponseEntity<Page<NotificationResponse>> getNotifications(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                        @RequestParam(defaultValue = "0") int page,
-                                                                       @RequestParam(defaultValue = "10") int size) {
+                                                                       @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<NotificationResponse> notifications = service.getNotifications(id, pageable);
+        Page<NotificationResponse> notifications = service.getNotifications(principalDetails.getId(), pageable);
         return ResponseEntity.ok(notifications);
     }
 
